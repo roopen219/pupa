@@ -17,18 +17,9 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 		throw new TypeError(`Expected an \`object\` or \`Array\` in the second argument, got \`${typeof data}\``);
 	}
 
-	const replace = (placeholder, key) => {
+	const replace = (placeholder, key, type) => {
 		let value = data;
-		const splitKey = key.split(':');
-		let _key;
-		let _type;
-		if (splitKey.length > 1) {
-			_key = splitKey[0];
-			_type = splitKey[1];
-		} else {
-			_key = key;
-		}
-		for (const property of _key.split('.')) {
+		for (const property of key.split('.')) {
 			value = value ? value[property] : undefined;
 		}
 
@@ -41,15 +32,15 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			throw new MissingValueError(key);
 		}
 
-		if (_type === 'int') {
+		if (type === ':int') {
 			return parseInt(transformedValue);
 		}
 
-		if (_type === 'bool') {
+		if (type === ':bool') {
 			return Boolean(transformedValue);
 		}
 
-		if (_type === 'num') {
+		if (type === ':num') {
 			return Number(transformedValue);
 		}
 

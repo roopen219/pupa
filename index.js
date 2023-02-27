@@ -29,7 +29,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 	const composeHtmlEscape = replacer => (...args) => replacer(...args);
 
 	// The regex tries to match either a number inside `{{ }}` or a valid JS identifier or key path.
-	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)(:(int|bool|num|str|any))?(:(null))?}}/gi;
+	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)(:(int|bool|num|str|any|json))?(:(null))?}}/gi;
 
 	if (doubleBraceRegex.test(template)) {
 		const value = template.replace(doubleBraceRegex, composeHtmlEscape(replace));
@@ -47,6 +47,10 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 
 		if (type === 'num') {
 			return Number(value);
+		}
+
+		if (type === 'json') {
+			return JSON.parse(value);
 		}
 
 		if (useNull && value === 'undefined') {

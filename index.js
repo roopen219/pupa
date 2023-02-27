@@ -49,7 +49,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			return Number(value);
 		}
 
-		if (type === 'json') {
+		if (type === 'json' && value !== 'undefined') {
 			return JSON.parse(value);
 		}
 

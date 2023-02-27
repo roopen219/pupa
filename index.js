@@ -19,7 +19,16 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 
 	const replace = (placeholder, key) => {
 		let value = data;
-		for (const property of key.split('.')) {
+		const splitKey = key.split(':');
+		let _key;
+		let _type;
+		if (splitKey.length > 1) {
+			_key = splitKey[0];
+			_type = splitKey[1];
+		} else {
+			_key = key;
+		}
+		for (const property of _key.split('.')) {
 			value = value ? value[property] : undefined;
 		}
 
@@ -32,13 +41,25 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			throw new MissingValueError(key);
 		}
 
+		if (_type === 'int') {
+			return parseInt(transformedValue);
+		}
+
+		if (_type === 'bool') {
+			return Boolean(transformedValue);
+		}
+
+		if (_type === 'num') {
+			return Number(transformedValue);
+		}
+
 		return String(transformedValue);
 	};
 
 	const composeHtmlEscape = replacer => (...args) => htmlEscape(replacer(...args));
 
 	// The regex tries to match either a number inside `{{ }}` or a valid JS identifier or key path.
-	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)}}/gi;
+	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)(:(int|bool|num))?}}/gi;
 
 	if (doubleBraceRegex.test(template)) {
 		return template.replace(doubleBraceRegex, composeHtmlEscape(replace));

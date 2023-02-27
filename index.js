@@ -41,10 +41,11 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)}}/gi;
 
 	if (doubleBraceRegex.test(template)) {
-		template = template.replace(doubleBraceRegex, composeHtmlEscape(replace));
+		return template.replace(doubleBraceRegex, composeHtmlEscape(replace));
 	}
 
-	const braceRegex = /{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)}/gi;
+// 	const braceRegex = /{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)}/gi;
 
-	return template.replace(braceRegex, replace);
+// 	return template.replace(braceRegex, replace);
+	return template;
 }

@@ -40,7 +40,8 @@
 		"micro"
 	],
 	"dependencies": {
-		"escape-goat": "^4.0.0"
+	  "escape-goat": "^4.0.0",
+	  "wild-wild-path": "3.6.0"
 	},
 	"devDependencies": {
 		"ava": "^3.15.0",

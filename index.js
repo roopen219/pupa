@@ -1,3 +1,4 @@
+import { get as getWild } from 'wild-wild-path';
 export class MissingValueError extends Error {
 	constructor(key) {
 		super(`Missing a value for ${key ? `the placeholder: ${key}` : 'a placeholder'}`, key);
@@ -16,10 +17,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 	}
 
 	const replace = (placeholder, key) => {
-		let value = data;
-		for (const property of key.split('.')) {
-			value = value ? value[property] : undefined;
-		}
+		const value = getWild(data, key);
 
 		const transformedValue = transform({value, key});
 
@@ -29,7 +27,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 	const composeHtmlEscape = replacer => (...args) => replacer(...args);
 
 	// The regex tries to match either a number inside `{{ }}` or a valid JS identifier or key path.
-	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)(:(int|bool|num|str|any|json))?(:(null))?}}/gi;
+	const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$*]*?)*?)(:(int|bool|num|str|any|json))?(:(null))?}}/gi;
 
 	if (doubleBraceRegex.test(template)) {
 		const value = template.replace(doubleBraceRegex, composeHtmlEscape(replace));

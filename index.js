@@ -1,4 +1,6 @@
 import { get as getWild } from 'wild-wild-path';
+import { isArray, isPlainObject } from 'lodash-es';
+
 export class MissingValueError extends Error {
 	constructor(key) {
 		super(`Missing a value for ${key ? `the placeholder: ${key}` : 'a placeholder'}`, key);
@@ -20,6 +22,10 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 		const value = getWild(data, key);
 
 		const transformedValue = transform({value, key});
+
+		if (isPlainObject(transformedValue) || isArray(transformedValue)) {
+			return JSON.stringify(transformedValue);
+		}
 
 		return String(transformedValue);
 	};
@@ -47,7 +53,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			return Number(value);
 		}
 
-		if (type === 'json' && value !== 'undefined' && (typeof value === 'string' || value instanceof String)) {
+		if (type === 'json' && value !== 'undefined') {
 			return JSON.parse(value);
 		}
 

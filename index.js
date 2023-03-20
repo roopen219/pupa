@@ -47,7 +47,7 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			return Number(value);
 		}
 
-		if (type === 'json' && value !== 'undefined') {
+		if (type === 'json' && value !== 'undefined' && (typeof value === 'string' || value instanceof String)) {
 			return JSON.parse(value);
 		}
 

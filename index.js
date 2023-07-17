@@ -1,5 +1,5 @@
 import { get as getWild } from 'wild-wild-path';
-import { isArray, isPlainObject } from 'lodash-es';
+import {isArray, isPlainObject, isUndefined} from 'lodash-es';
 
 export class MissingValueError extends Error {
 	constructor(key) {
@@ -27,6 +27,10 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 			return JSON.stringify(transformedValue);
 		}
 
+		if (isUndefined(transformedValue) && ignoreMissing) {
+			return placeholder;
+		}
+
 		return String(transformedValue);
 	};
 
@@ -42,19 +46,34 @@ export default function pupa(template, data, {ignoreMissing = false, transform =
 		const useNull = matches[0] ? matches[0][5] : null;
 
 		if (type === 'int') {
-			return parseInt(value);
+			const parsedInt = parseInt(value);
+			if (isNaN(parsedInt)) {
+				return value;
+			}
+			return parsedInt;
 		}
 
 		if (type === 'bool') {
-			return Boolean(value);
+			if (value === 'false' || value === 'true') {
+				return value === 'true';
+			}
+			return value;
 		}
 
 		if (type === 'num') {
-			return Number(value);
+			const parsedNumber = Number(value);
+			if (isNaN(parsedNumber)) {
+				return value;
+			}
+			return parsedNumber;
 		}
 
 		if (type === 'json' && value !== 'undefined') {
-			return JSON.parse(value);
+			try {
+				return JSON.parse(value);
+			} catch (err) {
+				return value;
+			}
 		}
 
 		if (useNull && value === 'undefined') {
